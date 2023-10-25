@@ -5,6 +5,7 @@ from time import sleep
 from bs4 import BeautifulSoup
 import re
 from selenium.webdriver.chrome.options import Options
+import json
 
 # mode headless
 chrome_options = Options()
@@ -19,9 +20,26 @@ data = []
 #Settings driver Chrome 
 navegador = webdriver.Chrome(options=chrome_options)
 
-#url = 'https://medium.com/search?q=Natural+Language+Process'
 url = 'https://medium.com/search/lists?q=Natural+Language+Process&source=search_list---------4----------------------------'
 
+def jsonExport(info):
+    dados_existentes = []
+    archive = 'papersMedium.json'
+    try:
+        with open(archive, 'r') as arquivo:
+            dados_existentes = json.load(arquivo)
+        dados_existentes.append(info)
+
+    except FileNotFoundError:
+        dados_existentes = [info]
+
+    
+    print(dados_existentes)
+    with open(archive, 'w') as arquivo:
+        json.dump(dados_existentes, arquivo)
+        
+    dados_existentes.clear()
+    
 def clean_text(text):
     cleaned_text = re.sub(r'[^\x00-\x7F]+', ' ', text)
     return cleaned_text
@@ -71,13 +89,10 @@ def getLinks(url):
 
     soup = getPageSource(url, 0, 10)
     
-    # Encontre todas as tags <a> com a classe 'af ag ah ai aj ak al am an ao ap aq ar as at'
     links = soup.find_all('a', class_='af ag ah ax aj ak al am an ao ap aq ar as at ff kc')
-    # Crie um conjunto para armazenar os links únicos
 
     pattern = re.compile(r'/@.*/list/n')
 
-    # Imprima os atributos 'href' das tags <a> que atendem à condição
     for link in links:
         href = link.get('href')
         if href and pattern.match(href):
@@ -87,12 +102,6 @@ def getLinks(url):
 
     soup = soup.prettify()
 
-    # Salve o HTML em um arquivo
-    file_name = "struct_getLinks.txt"
-    with open(file_name, 'w', encoding='utf-8') as file:
-        file.write(soup)
-        
-    #navegador.quit()
 
 def acessAndGetLinksInPerfil(url):
     
@@ -218,12 +227,10 @@ def getData(url):
     else:
         info['text'] = 'false'
     
-    print(info)
-    soup = soup.prettify()
+    #print(info)
+    jsonExport(info)
 
-    file_name = "struct_getData.txt"
-    with open(file_name, 'w', encoding='utf-8') as file:
-        file.write(soup)
+   
     
 def main(url):
     getLinks(url)
