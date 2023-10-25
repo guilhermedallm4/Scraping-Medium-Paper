@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import re
 from selenium.webdriver.chrome.options import Options
 import json
+import unicodedata
 
 # mode headless
 chrome_options = Options()
@@ -26,7 +27,7 @@ def jsonImport(info):
     dados_existentes = []
     archive = 'papersMedium.json'
     try:
-        with open(archive, 'r') as arquivo:
+        with open(archive, 'r', encoding="utf-8") as arquivo:
             dados_existentes = json.load(arquivo)
         dados_existentes.append(info)
 
@@ -34,15 +35,14 @@ def jsonImport(info):
         dados_existentes = [info]
 
     
-    print(dados_existentes)
-    with open(archive, 'w') as arquivo:
-        json.dump(dados_existentes, arquivo)
+    
+    with open(archive, 'w', encoding="utf-8") as arquivo:
+        json.dump(dados_existentes, arquivo, ensure_ascii=False)
         
     dados_existentes.clear()
-    
+
 def clean_text(text):
-    cleaned_text = re.sub(r'[^\x00-\x7F]+', ' ', text)
-    return cleaned_text
+    return ''.join(char for char in text if unicodedata.name(char).isascii())
 
 # init = 0 start scraping with function getLinks, init = 1 other call of the function
 def getPageSource(url, init = 0, maxscroll = 1):
@@ -86,7 +86,7 @@ def getPageSource(url, init = 0, maxscroll = 1):
 
 def getLinks(url):
 
-    soup = getPageSource(url, 0, 1)
+    soup = getPageSource(url, 0, 8)
     
     links = soup.find_all('a', class_='af ag ah ax aj ak al am an ao ap aq ar as at ff kc')
 
@@ -98,13 +98,16 @@ def getLinks(url):
         if href and pattern.match(href):
             text = "https://medium.com" + href
             unique_links.add(text)
-            
-
-    print(unique_links)
+    
+    try:
+        with open('linkofList.json', 'w', encoding="utf-8") as arquivo:
+            json.dump(unique_links, arquivo, ensure_ascii=False)
+    except:
+        print("Error save in file")
 
 def acessAndGetLinksInPerfil(url):
     
-    soup = getPageSource(url, 1, 1)
+    soup = getPageSource(url, 1, 20)
     
     html_content = navegador.page_source
     
@@ -120,9 +123,12 @@ def acessAndGetLinksInPerfil(url):
             text = "https://medium.com" + href
             if text is not None:
                 unique_links_post.add(text)
-            
-    print(unique_links_post)
-
+    try:
+        with open('linkofPost.json', 'w', encoding="utf-8") as arquivo:
+            json.dump(unique_links_post, arquivo, ensure_ascii=False)
+    except:
+        print("Error save in file")
+    
 def getData(url):
     
     soup = getPageSource(url, 1, 1)
@@ -234,11 +240,14 @@ def getData(url):
     jsonImport(info)
  
 def main(url):
+    print("1° Step: ")
+    sleep(3)
     getLinks(url)
+    print("2° Step: ")
     for link in unique_links:
-        print("ENTREI")
         sleep(5)
         acessAndGetLinksInPerfil(link)
+    print("3° Step: ")
     for acessPost in unique_links_post:
         getData(acessPost)
 
