@@ -76,10 +76,10 @@ def getPageSource(url, init = 0, maxscroll = 1):
             navegador.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             sleep(10)
 
-    # Obtenha o HTML da página após o clique
+    
     html_content = navegador.page_source
     
-    # Use BeautifulSoup para analisar o HTML
+    
     soup = BeautifulSoup(html_content, 'html.parser')
     
     return soup
