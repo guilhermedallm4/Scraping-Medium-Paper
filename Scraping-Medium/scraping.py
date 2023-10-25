@@ -22,7 +22,7 @@ navegador = webdriver.Chrome(options=chrome_options)
 
 url = 'https://medium.com/search/lists?q=Natural+Language+Process&source=search_list---------4----------------------------'
 
-def jsonExport(info):
+def jsonImport(info):
     dados_existentes = []
     archive = 'papersMedium.json'
     try:
@@ -58,7 +58,6 @@ def getPageSource(url, init = 0, maxscroll = 1):
             print(i)
             
             try:
-                
                 button = navegador.find_element(By.XPATH, f'//*[@id="root"]/div/div[3]/div[2]/div/main/div/div/div/div/div[{(10*i)+variable}]/div[1]/button')
                 sleep(10)
                 button.click()
@@ -87,45 +86,42 @@ def getPageSource(url, init = 0, maxscroll = 1):
 
 def getLinks(url):
 
-    soup = getPageSource(url, 0, 10)
+    soup = getPageSource(url, 0, 1)
     
     links = soup.find_all('a', class_='af ag ah ax aj ak al am an ao ap aq ar as at ff kc')
 
     pattern = re.compile(r'/@.*/list/n')
-
+    
     for link in links:
         href = link.get('href')
+        print(href)
         if href and pattern.match(href):
             text = "https://medium.com" + href
             unique_links.add(text)
-            print(text)
+            
 
-    soup = soup.prettify()
-
+    print(unique_links)
 
 def acessAndGetLinksInPerfil(url):
     
-    soup = getPageSource(url, 1, 20)
+    soup = getPageSource(url, 1, 1)
     
     html_content = navegador.page_source
     
     soup = BeautifulSoup(html_content, 'html.parser')
     
     links = soup.find_all('a', class_='af ag ah ai aj ak al am an ao ap aq ar as at')
-
+    
     pattern = re.compile(r'^/@.+/.+$')
 
     for link in links:
         href = link.get('href')
         if href and pattern.match(href):
             text = "https://medium.com" + href
-            unique_links_post.add(text)
-
-    soup = soup.prettify()
-
-    file_name = "struct_acessAndGetLinksInPerfil.txt"
-    with open(file_name, 'w', encoding='utf-8') as file:
-        file.write(soup)
+            if text is not None:
+                unique_links_post.add(text)
+            
+    print(unique_links_post)
 
 def getData(url):
     
@@ -159,6 +155,7 @@ def getData(url):
     info['link'] = url
     if title:
         title = title.text
+        title = clean_text(title)
         info['title'] = title 
         #print(title)
     else:
@@ -166,6 +163,7 @@ def getData(url):
     
     if subtitle:
         subtitle = subtitle.text
+        subtitle = clean_text(subtitle)
         info['subtitle'] = subtitle
         #print(subtitle)
     else:
@@ -173,6 +171,7 @@ def getData(url):
     
     if autorName:
         autorName = autorName.text
+        autorName = clean_text(autorName)
         info['autorName'] = autorName
         #print(autorName)
     else:
@@ -187,6 +186,7 @@ def getData(url):
         
     if clap:
         clap = clap.text
+        clap = clean_text(clap)
         info['clap'] = clap
         #print(clap)
     else:
@@ -194,6 +194,7 @@ def getData(url):
 
     if responses:
         responses = responses.text
+        responses = clean_text(responses)
         info['response'] = responses
         #print(responses)
     else:
@@ -201,6 +202,7 @@ def getData(url):
     
     if timeForRead:
         timeForRead = timeForRead.text
+        timeForRead = clean_text(timeForRead)
         info['timeForRead'] = timeForRead
         #print(timeForRead)
     else:
@@ -208,6 +210,7 @@ def getData(url):
         
     if dateCreate:
         dateCreate = dateCreate.text
+        dateCreate = clean_text(dateCreate)
         info['dateCreate'] = dateCreate
         #print(dateCreate)
     else:
@@ -227,14 +230,14 @@ def getData(url):
     else:
         info['text'] = 'false'
     
-    #print(info)
-    jsonExport(info)
-
-   
     
+    jsonImport(info)
+ 
 def main(url):
     getLinks(url)
     for link in unique_links:
+        print("ENTREI")
+        sleep(5)
         acessAndGetLinksInPerfil(link)
     for acessPost in unique_links_post:
         getData(acessPost)
