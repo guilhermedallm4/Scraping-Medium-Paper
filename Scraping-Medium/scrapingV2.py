@@ -20,7 +20,7 @@ data = []
 #Settings driver Chrome 
 navegador = webdriver.Chrome(options=chrome_options)
 
-tokens = ['iot', 'nlp', 'agriculture', 'ontology']
+tokens = ['iot', 'nlp', 'agriculture', 'ontology', 'postgresql', 'cluster', 'distributed-processing', 'parallel-processing']
 
 counter = 0
 
@@ -51,31 +51,10 @@ def getPageSource(url, init = 0, maxscroll = 1):
 
     sleep(5)
 
-    if init == 0:
-        variable = 13
-        for i in range(0, maxscroll):
+    for i in range(0, maxscroll):
             
-            navegador.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            print(i)
-            
-            try:
-                button = navegador.find_element(By.XPATH, f'//*[@id="root"]/div/div[3]/div[2]/div/main/div/div/div/div/div[{(10*i)+variable}]/div[1]/button')
-                sleep(10)
-                button.click()
-                
-            except Exception as e:
-
-                print(f'Max: {i}')
-                break
-            
-            sleep(10)
-            
-    else:
-        
-        for i in range(0, maxscroll):
-            
-            navegador.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            sleep(10)
+        navegador.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        sleep(10)
 
     
     html_content = navegador.page_source
@@ -88,7 +67,7 @@ def getPageSource(url, init = 0, maxscroll = 1):
     
 def acessAndGetLinksInPerfil(url):
     
-    soup = getPageSource(url, 1, 20)
+    soup = getPageSource(url, 1, 30)
 
     links = soup.find_all('a', class_='af ag ah ai aj ak al am an ao ap aq ar as at')
     
