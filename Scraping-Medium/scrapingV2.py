@@ -20,11 +20,13 @@ data = []
 #Settings driver Chrome 
 navegador = webdriver.Chrome(options=chrome_options)
 
-url = 'https://medium.com/tag/llm/recommended'
+tokens = ['iot', 'nlp', 'agriculture', 'ontology']
 
-def jsonImport(info):
+counter = 0
+
+def jsonImport(info, token):
     dados_existentes = []
-    archive = 'papersMediumLLM.json'
+    archive = f'./scraping_MediumV2/papersMedium-{token}.json'
     try:
         with open(archive, 'r', encoding="utf-8") as arquivo:
             dados_existentes = json.load(arquivo)
@@ -86,7 +88,7 @@ def getPageSource(url, init = 0, maxscroll = 1):
     
 def acessAndGetLinksInPerfil(url):
     
-    soup = getPageSource(url, 1, 30)
+    soup = getPageSource(url, 1, 20)
 
     links = soup.find_all('a', class_='af ag ah ai aj ak al am an ao ap aq ar as at')
     
@@ -101,13 +103,13 @@ def acessAndGetLinksInPerfil(url):
                 
     try:
         
-        with open('linkofPost.txt', 'w', encoding='utf-8') as arquivo:
+        with open('./scraping_MediumV2/linkofPost.txt', 'w', encoding='utf-8') as arquivo:
             for link in unique_links_post:
                 arquivo.write(link + '\n')
     except:
         print("Error save in file")
        
-def getData(url):
+def getData(url, token):
     
     soup = getPageSource(url, 1, 1)
     
@@ -215,14 +217,17 @@ def getData(url):
         info['text'] = 'false'
     
     
-    jsonImport(info)
+    jsonImport(info, token)
  
-def main(url):
-    print("1 Step: ")
-    sleep(5)
-    acessAndGetLinksInPerfil(url)
-    print("2 Step: ")
-    for acessPost in unique_links_post:
-        getData(acessPost)
-
-main(url)
+def main():
+    for token in tokens:
+        url = f'https://medium.com/tag/{token}/archive'
+        print(url)
+        print("1 Step: ")
+        sleep(5)
+        acessAndGetLinksInPerfil(url)
+        print("2 Step: ")
+        for acessPost in unique_links_post:
+            getData(acessPost, token)
+        
+main()
