@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from time import sleep
 from bs4 import BeautifulSoup
 import re
@@ -21,7 +20,7 @@ data = []
 #Settings driver Chrome 
 navegador = webdriver.Chrome(options=chrome_options)
 
-url = 'https://medium.com/search/lists?q=Natural+Language+Process&source=search_list---------4----------------------------'
+url = 'https://medium.com/search/lists?q=LLM&source=search_list---------4----------------------------'
 
 def jsonImport(info):
     dados_existentes = []
@@ -41,7 +40,7 @@ def jsonImport(info):
         
     dados_existentes.clear()
 
-def clean_text(text):
+def clean_text(text): 
     return ''.join(char for char in text if unicodedata.name(char).isascii())
 
 # init = 0 start scraping with function getLinks, init = 1 other call of the function
@@ -76,42 +75,44 @@ def getPageSource(url, init = 0, maxscroll = 1):
             navegador.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             sleep(10)
 
-    
+    # Obtenha o HTML da página após o clique
     html_content = navegador.page_source
     
-    
+    # Use BeautifulSoup para analisar o HTML
     soup = BeautifulSoup(html_content, 'html.parser')
     
+    #print(soup.prettify())
     return soup
 
 def getLinks(url):
-
-    soup = getPageSource(url, 0, 8)
     
-    links = soup.find_all('a', class_='af ag ah ax aj ak al am an ao ap aq ar as at ff kc')
-
-    pattern = re.compile(r'/@.*/list/n')
+    keySearch = re.compile(r'.*LLM.*')
+    soup = getPageSource(url, 0, 1)
     
+    #links = soup.find_all('a', class_='af ag ah ax aj ak al am an ao ap aq ar as at ff kc')
+    links = soup.find_all('a', {'aria-label': keySearch})
+    
+    #aria_label = link_tag['aria-label']
+    pattern = re.compile(r'/@.*/list/')
+    
+    #print(links)
     for link in links:
         href = link.get('href')
         print(href)
         if href and pattern.match(href):
             text = "https://medium.com" + href
             unique_links.add(text)
-    
     try:
-        with open('linkofList.json', 'w', encoding="utf-8") as arquivo:
-            json.dump(unique_links, arquivo, ensure_ascii=False)
+        # Abra o arquivo de texto para escrever
+        with open('linkofList.txt', 'w', encoding='utf-8') as arquivo:
+            for link in unique_links:
+                arquivo.write(link + '\n')
     except:
         print("Error save in file")
-
+    
 def acessAndGetLinksInPerfil(url):
     
-    soup = getPageSource(url, 1, 20)
-    
-    html_content = navegador.page_source
-    
-    soup = BeautifulSoup(html_content, 'html.parser')
+    soup = getPageSource(url, 1, 1)
     
     links = soup.find_all('a', class_='af ag ah ai aj ak al am an ao ap aq ar as at')
     
@@ -123,12 +124,15 @@ def acessAndGetLinksInPerfil(url):
             text = "https://medium.com" + href
             if text is not None:
                 unique_links_post.add(text)
+                
     try:
-        with open('linkofPost.json', 'w', encoding="utf-8") as arquivo:
-            json.dump(unique_links_post, arquivo, ensure_ascii=False)
+        # Abra o arquivo de texto para escrever
+        with open('linkofPost.txt', 'w', encoding='utf-8') as arquivo:
+            for link in unique_links_post:
+                arquivo.write(link + '\n')
     except:
         print("Error save in file")
-    
+       
 def getData(url):
     
     soup = getPageSource(url, 1, 1)
@@ -240,14 +244,14 @@ def getData(url):
     jsonImport(info)
  
 def main(url):
-    print("1° Step: ")
+    print("1 Step: ")
     sleep(3)
     getLinks(url)
-    print("2° Step: ")
+    print("2 Step: ")
     for link in unique_links:
         sleep(5)
         acessAndGetLinksInPerfil(link)
-    print("3° Step: ")
+    print("3 Step: ")
     for acessPost in unique_links_post:
         getData(acessPost)
 
