@@ -75,13 +75,13 @@ def getPageSource(url, init = 0, maxscroll = 1):
             navegador.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             sleep(10)
 
-    # Obtenha o HTML da página após o clique
+    
     html_content = navegador.page_source
     
-    # Use BeautifulSoup para analisar o HTML
+    
     soup = BeautifulSoup(html_content, 'html.parser')
     
-    #print(soup.prettify())
+    
     return soup
 
 def getLinks(url):
@@ -89,10 +89,10 @@ def getLinks(url):
     keySearch = re.compile(r'.*LLM.*')
     soup = getPageSource(url, 0, 1)
     
-    #links = soup.find_all('a', class_='af ag ah ax aj ak al am an ao ap aq ar as at ff kc')
+    
     links = soup.find_all('a', {'aria-label': keySearch})
     
-    #aria_label = link_tag['aria-label']
+    
     pattern = re.compile(r'/@.*/list/')
     
     #print(links)
@@ -103,7 +103,7 @@ def getLinks(url):
             text = "https://medium.com" + href
             unique_links.add(text)
     try:
-        # Abra o arquivo de texto para escrever
+        
         with open('linkofList.txt', 'w', encoding='utf-8') as arquivo:
             for link in unique_links:
                 arquivo.write(link + '\n')
@@ -126,7 +126,7 @@ def acessAndGetLinksInPerfil(url):
                 unique_links_post.add(text)
                 
     try:
-        # Abra o arquivo de texto para escrever
+        
         with open('linkofPost.txt', 'w', encoding='utf-8') as arquivo:
             for link in unique_links_post:
                 arquivo.write(link + '\n')
