@@ -167,7 +167,7 @@ def getData(url):
         title = title.text
         title = clean_text(title)
         info['title'] = title 
-        #print(title)
+       
     else:
         info['title'] = 'false' 
     
@@ -175,7 +175,7 @@ def getData(url):
         subtitle = subtitle.text
         subtitle = clean_text(subtitle)
         info['subtitle'] = subtitle
-        #print(subtitle)
+       
     else:
         info['subtitle'] = 'false'
     
@@ -183,14 +183,14 @@ def getData(url):
         autorName = autorName.text
         autorName = clean_text(autorName)
         info['autorName'] = autorName
-        #print(autorName)
+    
     else:
         info['autorName'] = 'false'
         
     if imageAutor:
         imageAutor = imageAutor['src']
         info['imageAutor'] = imageAutor
-        #print(imageAutor)
+       
     else:
         info['imageAutor'] = 'false'
         
@@ -198,7 +198,7 @@ def getData(url):
         clap = clap.text
         clap = clean_text(clap)
         info['clap'] = clap
-        #print(clap)
+        
     else:
         info['clap'] = 'false'
 
@@ -206,7 +206,7 @@ def getData(url):
         responses = responses.text
         responses = clean_text(responses)
         info['response'] = responses
-        #print(responses)
+        
     else:
         info['response'] = 'false'
     
@@ -214,7 +214,7 @@ def getData(url):
         timeForRead = timeForRead.text
         timeForRead = clean_text(timeForRead)
         info['timeForRead'] = timeForRead
-        #print(timeForRead)
+        
     else:
         info['timeForRead'] = 'false'
         
@@ -222,7 +222,7 @@ def getData(url):
         dateCreate = dateCreate.text
         dateCreate = clean_text(dateCreate)
         info['dateCreate'] = dateCreate
-        #print(dateCreate)
+        
     else:
         info['dateCreate'] = 'false'
     
