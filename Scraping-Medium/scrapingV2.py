@@ -82,10 +82,10 @@ def acessAndGetLinksInPerfil(url):
             text = "https://medium.com" + href
             if text is not None:
                 unique_links_post.add(text)
-                
+    archiveName = f'./scraping_MediumV2/linksPaper-{token}.txt'
     try:
         
-        with open(f'./scraping_MediumV2/linksPaper-{token}.txt', 'w', encoding='utf-8') as arquivo:
+        with open(archiveName, 'w', encoding='utf-8') as arquivo:
             for link in unique_links_post:
                 arquivo.write(link + '\n')
     except:
