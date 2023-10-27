@@ -68,7 +68,7 @@ def getPageSource(url, init = 0, maxscroll = 1):
     
     return soup
     
-def acessAndGetLinksInPerfil(url):
+def acessAndGetLinksInPerfil(url, token):
     
     soup = getPageSource(url, 1, 40)
 
@@ -82,6 +82,7 @@ def acessAndGetLinksInPerfil(url):
             text = "https://medium.com" + href
             if text is not None:
                 unique_links_post.add(text)
+                
     archiveName = f'./scraping_MediumV2/linksPaper-{token}.txt'
     try:
         
@@ -218,12 +219,13 @@ def main():
         print(url)
         print("1 Step: ")
         sleep(5)
-        acessAndGetLinksInPerfil(url)
+        acessAndGetLinksInPerfil(url, token)
         print("2 Step: ")
         for acessPost in unique_links_post:
             getData(acessPost, token)
+            tagToken.clear()
         unique_links.clear()
         unique_links_post.clear()
-        tagToken.clear()
+        
  
 main()
