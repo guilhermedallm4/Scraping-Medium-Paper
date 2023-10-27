@@ -14,6 +14,7 @@ chrome_options.add_argument('--headless')
 # Create a conjunt for unique URLS 
 unique_links = set()
 unique_links_post = set()
+tagToken = set()
 
 data = []
 
@@ -23,6 +24,8 @@ navegador = webdriver.Chrome(options=chrome_options)
 tokens = ['iot', 'nlp', 'agriculture', 'ontology', 'postgresql', 'cluster', 'distributed-processing', 'parallel-processing']
 
 counter = 0
+
+informationToken = {}
 
 def jsonImport(info, token):
     dados_existentes = []
@@ -67,7 +70,7 @@ def getPageSource(url, init = 0, maxscroll = 1):
     
 def acessAndGetLinksInPerfil(url):
     
-    soup = getPageSource(url, 1, 30)
+    soup = getPageSource(url, 1, 40)
 
     links = soup.find_all('a', class_='af ag ah ai aj ak al am an ao ap aq ar as at')
     
@@ -82,12 +85,24 @@ def acessAndGetLinksInPerfil(url):
                 
     try:
         
-        with open('./scraping_MediumV2/linkofPost.txt', 'w', encoding='utf-8') as arquivo:
+        with open(f'./scraping_MediumV2/linksPaper-{token}.txt', 'w', encoding='utf-8') as arquivo:
             for link in unique_links_post:
                 arquivo.write(link + '\n')
     except:
         print("Error save in file")
-       
+    
+def getOtherTags(soup):
+
+    elementoToken = soup.find_all('a', class_=re.compile(r'.*ax am ao'))
+
+    filterElement = re.compile(r'/tag/(.*?)(?:\?source|$)')
+
+    for element in elementoToken:
+        match = filterElement.search(element['href'])
+        if match:
+            tag_value = match.group(1)
+            tagToken.add(tag_value)
+    
 def getData(url, token):
     
     soup = getPageSource(url, 1, 1)
@@ -117,10 +132,10 @@ def getData(url, token):
     post = soup.find_all('p', class_=re.compile(r'pw-post-body-paragraph.*'))
     info = {}
     
+    info['token'] = token
     info['link'] = url
     if title:
         title = title.text
-        title = clean_text(title)
         info['title'] = title 
        
     else:
@@ -128,7 +143,6 @@ def getData(url, token):
     
     if subtitle:
         subtitle = subtitle.text
-        subtitle = clean_text(subtitle)
         info['subtitle'] = subtitle
        
     else:
@@ -136,7 +150,6 @@ def getData(url, token):
     
     if autorName:
         autorName = autorName.text
-        autorName = clean_text(autorName)
         info['autorName'] = autorName
     
     else:
@@ -151,7 +164,6 @@ def getData(url, token):
         
     if clap:
         clap = clap.text
-        clap = clean_text(clap)
         info['clap'] = clap
         
     else:
@@ -159,7 +171,6 @@ def getData(url, token):
 
     if responses:
         responses = responses.text
-        responses = clean_text(responses)
         info['response'] = responses
         
     else:
@@ -167,7 +178,6 @@ def getData(url, token):
     
     if timeForRead:
         timeForRead = timeForRead.text
-        timeForRead = clean_text(timeForRead)
         info['timeForRead'] = timeForRead
         
     else:
@@ -175,7 +185,6 @@ def getData(url, token):
         
     if dateCreate:
         dateCreate = dateCreate.text
-        dateCreate = clean_text(dateCreate)
         info['dateCreate'] = dateCreate
         
     else:
@@ -185,9 +194,7 @@ def getData(url, token):
         text_list = []
 
         for tag in post:
-            stringAppend = clean_text(tag.text)
-            
-            text_list.append(stringAppend+'\n')
+            text_list.append(str(tag.text) +'\n')
 
         info['text'] = text_list.copy()
 
@@ -195,7 +202,15 @@ def getData(url, token):
     else:
         info['text'] = 'false'
     
+    getOtherTags(soup)
     
+    info['tagsPost'] = []
+    
+    for tag in tagToken:
+        info['tagsPost'].append(tag)
+    
+    print(info['tagsPost'])
+
     jsonImport(info, token)
  
 def main():
@@ -208,5 +223,10 @@ def main():
         print("2 Step: ")
         for acessPost in unique_links_post:
             getData(acessPost, token)
-        
+        unique_links.clear()
+        unique_links_post.clear()
+        tagToken.clear()
+ 
+#getOtherTags()
+#getData('https://medium.com/@bajrang1081siyag/blackhole-attacks-and-sinkhole-attacks-in-iot-networks-a64542380129?source=tag_archive---------277----------------------------', 'iot')       
 main()
