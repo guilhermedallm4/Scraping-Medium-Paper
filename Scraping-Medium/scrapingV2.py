@@ -21,7 +21,7 @@ data = []
 #Settings driver Chrome 
 navegador = webdriver.Chrome(options=chrome_options)
 
-tokens = ['iot', 'nlp', 'agriculture', 'ontology', 'postgresql', 'cluster', 'distributed-processing', 'parallel-processing']
+tokens = ['iot', 'siot', 'nlp', 'agriculture', 'ontology', 'postgresql', 'cluster', 'distributed-processing', 'parallel-processing']
 
 counter = 0
 
@@ -209,7 +209,6 @@ def getData(url, token):
     for tag in tagToken:
         info['tagsPost'].append(tag)
     
-    print(info['tagsPost'])
 
     jsonImport(info, token)
  
@@ -227,6 +226,4 @@ def main():
         unique_links_post.clear()
         tagToken.clear()
  
-#getOtherTags()
-#getData('https://medium.com/@bajrang1081siyag/blackhole-attacks-and-sinkhole-attacks-in-iot-networks-a64542380129?source=tag_archive---------277----------------------------', 'iot')       
 main()
