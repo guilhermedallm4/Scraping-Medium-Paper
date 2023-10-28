@@ -6,11 +6,12 @@ Este código é um script Python que realiza a raspagem (scraping) de dados de a
 ## Bibliotecas Necessárias
 Para executar o código, você precisa ter as seguintes bibliotecas Python instaladas:
 
-selenium - Usada para automatizar a interação com o navegador.
-beautifulsoup4 - Utilizada para analisar o HTML das páginas web.
-re - Usada para trabalhar com expressões regulares.
-json - Utilizada para ler e escrever dados no formato JSON.
-unicodedata - Usada para trabalhar com caracteres Unicode.
+- `selenium`: Usado para automação de navegação.
+- `beautifulsoup4`: Utilizado para análise de páginas da web.
+- `unicodedata`: Usado para lidar com caracteres Unicode.
+- `json`: Essencial para trabalhar com dados em formato JSON.
+- `re`: Essa biblioteca é utilizada para operações de expressões regulares, o que é útil para encontrar e extrair informações específicas de texto.
+- `time`: A biblioteca time é usada para introduzir atrasos no script, permitindo que o navegador tenha tempo suficiente para carregar as páginas ou para sincronização durante a execução do script.
 
 ## Instalação
 
@@ -19,8 +20,10 @@ Antes de executar o projeto, certifique-se de ter instalado as bibliotecas neces
 ```bash
 pip install selenium
 pip install beautifulsoup4
-pip install requests
+pip install json
 pip install unicodedata
+pip install re
+pip install time
 ```
 
 ## Estrutura do JSON
